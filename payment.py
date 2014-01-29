@@ -20,7 +20,8 @@ __all__ = ['Journal', 'Group', 'Payment', 'Mandate']
 class Journal:
     __name__ = 'account.payment.journal'
     company_party = fields.Function(fields.Many2One('party.party',
-            'Company Party'), 'on_change_with_company_party')
+            'Company Party', on_change_with=['company']),
+        'on_change_with_company_party')
     sepa_bank_account_number = fields.Many2One('bank.account.number',
         'SEPA Bank Account Number', states={
             'required': Eval('process_method') == 'sepa',
@@ -65,7 +66,6 @@ class Journal:
         if company_id:
             return Company(company_id).party.id
 
-    @fields.depends('company')
     def on_change_with_company_party(self, name=None):
         if self.company:
             return self.company.party.id

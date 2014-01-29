@@ -1,6 +1,11 @@
 #This file is part of Tryton.  The COPYRIGHT file at the top level of
 #this repository contains the full copyright notices and license terms.
+import sys
 import os
+DIR = os.path.abspath(os.path.normpath(os.path.join(__file__,
+    '..', '..', '..', '..', '..', 'trytond')))
+if os.path.isdir(DIR):
+    sys.path.insert(0, os.path.dirname(DIR))
 import unittest
 import doctest
 from itertools import chain
@@ -44,7 +49,7 @@ class AccountPaymentSepaTestCase(unittest.TestCase):
         'Test generated files are valid'
         with Transaction().start(DB_NAME, USER, context=CONTEXT):
             company, = self.company.search([
-                    ('rec_name', '=', 'Dunder Mifflin'),
+                    ('rec_name', '=', 'B2CK'),
                     ])
             euro, = self.currency.create([{
                         'name': 'Euro',
@@ -146,3 +151,6 @@ def suite():
     suite.addTests(unittest.TestLoader().loadTestsFromTestCase(
             AccountPaymentSepaTestCase))
     return suite
+
+if __name__ == '__main__':
+    unittest.TextTestRunner(verbosity=2).run(suite())
