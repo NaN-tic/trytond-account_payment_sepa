@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This file is part of Tryton.  The COPYRIGHT file at the top level of
+this repository contains the full copyright notices and license terms. -->
+<py:strip xmlns:py="http://genshi.edgewall.org/">
+    <py:def function="PartyIdentification(party)">
+        <Nm>${party.name[:140]}</Nm>
+        <py:with vars="address = party.address_get()">
+            <PstlAdr py:if="address">
+                ${PostalAddress(party.address_get())}
+            </PstlAdr>
+        </py:with>
+        <Id py:if="party.sepa_creditor_identifier">
+            <PrvtId>
+                <Othr>
+                    <Id>${party.sepa_creditor_identifier}</Id>
+                </Othr>
+            </PrvtId>
+        </Id>
+        <!-- CtryOfRes -->
+        <!-- CtctDtls -->
+    </py:def>
+    <py:def function="PostalAddress(address)">
+        <!-- AdrTp -->
+        <!-- Dept -->
+        <!-- SubDept -->
+        <StrtNm py:if="address.street">${address.street[:70]}</StrtNm>
+        <!-- BldgNb -->
+        <PstCd py:if="address.zip">${address.zip}</PstCd>
+        <TwnNm py:if="address.city">${address.city}</TwnNm>
+        <CtrySubDvsn py:if="address.subdivision">${address.subdivision.rec_name}</CtrySubDvsn>
+        <Ctry py:if="address.country">${address.country.code}</Ctry>
+        <!-- AdrLine -->
+    </py:def>
+    <py:def function="Account(account_number)">
+        <Id>
+            <!-- Usage rule: only IBAN is allowed -->
+            <IBAN>${account_number.compact_iban}</IBAN>
+        </Id>
+        <!-- Tp -->
+        <Ccy py:if="account_number.account.currency">${account_number.account.currency.code}</Ccy>
+        <!-- Nm -->
+    </py:def>
+    <py:def function="FinancialInstitution(bank)">
+        <FinInstnId>
+            <!-- EPC limits to only BICFI -->
+            <BICFI>${bank.bic}</BICFI>
+            <!-- ClrSysMmbId -->
+            <!--Nm>${bank.party.name[:140]}</Nm-->
+            <!--py:with vars="address = bank.party.address_get()">
+                <PstlAdr py:if="address">
+                    ${PostalAddress(address)}
+                </PstlAdr>
+            </py:with-->
+            <!-- Othr -->
+        </FinInstnId>
+        <!-- BrnchId -->
+    </py:def>
+</py:strip>

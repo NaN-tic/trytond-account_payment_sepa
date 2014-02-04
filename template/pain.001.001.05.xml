@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This file is part of Tryton.  The COPYRIGHT file at the top level of
+this repository contains the full copyright notices and license terms. -->
+<Document xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.05"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    xmlns:py="http://genshi.edgewall.org/">
+    <xi:include href="base.xml"/>
+    <CstmrCdtTrfInitn>
+        <GrpHdr>
+            <MsgId>${group.reference[:35]}</MsgId>
+            <CreDtTm>${datetime.datetime.now().isoformat()}</CreDtTm>
+            <!-- Authstn -->
+            <NbOfTxs>${len(group.payments)}</NbOfTxs>
+            <CtrlSum>${sum(p.amount for p in group.payments)}</CtrlSum>
+            <!-- PmtTpInf -->
+            <!-- ReqdColltnDt -->
+            <InitgPty>
+                ${PartyIdentification(group.company.party)}
+            </InitgPty>
+            <!-- FwdgAgt -->
+        </GrpHdr>
+        <PmtInf py:for="payment in group.payments">
+            <PmtInfId>${str(payment.id)[:35]}</PmtInfId>
+            <PmtMtd>TRF</PmtMtd>
+            <BtchBookg>false</BtchBookg>
+            <NbOfTxs>1</NbOfTxs>
+            <CtrlSum>${payment.amount}</CtrlSum>
+            <!-- PmtTpInf -->
+            <ReqdExctnDt>${payment.date.isoformat()}</ReqdExctnDt>
+            <!-- PoolgAdjstmntDt -->
+            <Dbtr>
+                ${PartyIdentification(group.company.party)}
+            </Dbtr>
+            <DbtrAcct>
+                ${Account(group.journal.sepa_bank_account_number)}
+            </DbtrAcct>
+            <DbtrAgt>
+                ${FinancialInstitution(group.journal.sepa_bank_account_number.account.bank)}
+            </DbtrAgt>
+            <!-- DbtrAgtAcct -->
+            <!-- InstrForDbtrAgt -->
+            <!-- UltmtDbtr -->
+            <!-- ChrgBr -->
+            <!-- ChrgsAcct -->
+            <!-- ChrgsAcctAgt -->
+            <CdtTrfTxInf> <!-- Only one per payment -->
+                <PmtId>
+                    <!-- InstrId -->
+                    <EndToEndId>${payment.sepa_end_to_end_id}</EndToEndId>
+                </PmtId>
+                <!-- PmtTpInf -->
+                <Amt>
+                    <InstdAmt py:attrs="{'Ccy': payment.currency.code}">${payment.amount}</InstdAmt>
+                </Amt>
+                <!-- XchgRateInf -->
+                <!-- ChrgBr -->
+                <!-- ChqInstr -->
+                <!-- UltmtDbtr -->
+                <!-- IntrmyAgt1 -->
+                <!-- IntrmyAgt1Acct -->
+                <!-- IntrmyAgt2 -->
+                <!-- IntrmyAgt2Acct -->
+                <!-- IntrmyAgt3 -->
+                <!-- IntrmyAgt3Acct -->
+                <CdtrAgt>
+                    ${FinancialInstitution(payment.sepa_bank_account_number.account.bank)}
+                </CdtrAgt>
+                <!-- CdtrAgtAcct -->
+                <Cdtr>
+                    ${PartyIdentification(payment.party)}
+                </Cdtr>
+                <CdtrAcct>
+                    ${Account(payment.sepa_bank_account_number)}
+                </CdtrAcct>
+                <!-- UltmtCdtr -->
+                <!-- InstrForCdtrAgt -->
+                <!-- InstrForDbtrAgt -->
+                <!-- Purp -->
+                <!-- RgltryRptg -->
+                <!-- Tax -->
+                <!-- RltdRmtInf -->
+                <!-- RmtInf -->
+                <!-- SplmtryData -->
+            </CdtTrfTxInf>
+        </PmtInf>
+        <!-- SplmtryData -->
+    </CstmrCdtTrfInitn>
+</Document>
