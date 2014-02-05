@@ -8,6 +8,7 @@ this repository contains the full copyright notices and license terms. -->
         <separator string="SEPA" colspan="4" id="sepa"/>
         <label name="sepa_creditor_identifier"/>
         <field name="sepa_creditor_identifier"/>
+        <button name="calculate_sepa_creditor_identifier" string="Calculate"/>
         <newline/>
     </xpath>
 </data>

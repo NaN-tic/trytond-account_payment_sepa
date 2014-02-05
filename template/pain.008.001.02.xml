@@ -108,13 +108,17 @@ this repository contains the full copyright notices and license terms. -->
                 <DbtrAcct>
                     ${Account(payment.sepa_bank_account_number)}
                 </DbtrAcct>
+                <RmtInf>
+                    <Ustrd>
+                        ${payment.description}
+                    </Ustrd>
+                </RmtInf>
                 <!-- UltmtDbtr -->
                 <!-- InstrForCdtrAgt -->
                 <!-- Purp -->
                 <!-- RgltryRptg -->
                 <!-- Tax -->
                 <!-- RltdRmtInf -->
-                <!-- RmtInf -->
             </DrctDbtTxInf>
         </PmtInf>
     </CstmrDrctDbtInitn>

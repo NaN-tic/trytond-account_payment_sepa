@@ -57,14 +57,15 @@ class AccountPaymentSepaTestCase(unittest.TestCase):
                         'code': 'EUR',
                         }])
             company.currency = euro
-            company.party.sepa_creditor_identifier = 'BE68539007547034'
+            company.party.sepa_creditor_identifier = 'ES75ZZZ00000000T'
             company.party.save()
             company.save()
             bank_party = self.party(name='European Bank')
             bank_party.save()
             bank = self.bank(party=bank_party, bic='BICODEBBXXX')
             bank.save()
-            customer = self.party(name='Customer')
+            customer = self.party(name='Customer',
+                sepa_creditor_identifier='ES48ZZZ00000001R')
             customer.save()
             company_account, customer_account = self.bank_account.create([{
                         'bank': bank,
