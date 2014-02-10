@@ -33,7 +33,7 @@ this repository contains the full copyright notices and license terms. -->
             <!-- PmtTpInf -->
             <!-- ReqdColltnDt -->
             <InitgPty>
-                ${PartyIdentification(group.company.party)}
+                ${PartyIdentification(group.sepa_initiating_party)}
             </InitgPty>
             <!-- FwdgAgt -->
         </GrpHdr>

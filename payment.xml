@@ -33,7 +33,7 @@ this repository contains the full copyright notices and license terms. -->
         </record>
 
         <record model="ir.action.act_window" id="act_mandate_form">
-            <field name="name">Mandates</field>
+            <field name="name">SEPA Mandates</field>
             <field name="res_model">account.payment.sepa.mandate</field>
         </record>
         <record model="ir.action.act_window.view" id="act_mandate_form_view1">
@@ -47,7 +47,7 @@ this repository contains the full copyright notices and license terms. -->
             <field name="act_window" ref="act_mandate_form"/>
         </record>
 
-        <menuitem parent="account_payment.menu_payments" sequence="40"
+        <menuitem parent="bank.menu_banking" sequence="30"
             action="act_mandate_form" id="menu_mandate_form"/>
 
         <record model="ir.rule.group" id="rule_group_mandate">

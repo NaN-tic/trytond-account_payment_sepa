@@ -110,7 +110,6 @@ class Group:
     def process_sepa(self):
         pool = Pool()
         Payment = pool.get('account.payment')
-
         if self.kind == 'receivable':
             payments = [p for p in self.payments if not p.sepa_mandate]
             mandates = Payment.get_sepa_mandates(payments)
@@ -125,6 +124,10 @@ class Group:
             raise NotImplementedError
         self.sepa_message = tmpl.generate(group=self,
             datetime=datetime).filter(remove_comment).render()
+
+    @property
+    def sepa_initiating_party(self):
+        return self.company.party
 
 
 class Payment:
