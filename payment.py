@@ -96,8 +96,6 @@ class Group:
         super(Group, cls).__setup__()
         cls._error_messages.update({
                 'no_mandate': 'No valid mandate for payment "%s"',
-                'no_creditor_identifier': ('No creditor identifier for party'
-                    ' "%s".'),
                 })
 
     def get_sepa_filename(self, name):
@@ -112,11 +110,6 @@ class Group:
     def process_sepa(self):
         pool = Pool()
         Payment = pool.get('account.payment')
-        if not self.company.party.sepa_creditor_identifier:
-            self.raise_user_error('no_creditor_identifier', self.company.party)
-        for payment in self.payments:
-            if not payment.party.sepa_creditor_identifier:
-                self.raise_user_error('no_creditor_identifier', payment.party)
 
         if self.kind == 'receivable':
             payments = [p for p in self.payments if not p.sepa_mandate]
