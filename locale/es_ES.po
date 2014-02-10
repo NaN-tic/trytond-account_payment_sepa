@@ -3,10 +3,6 @@ msgid ""
 msgstr "Content-Type: text/plain; charset=utf-8\n"
 
 msgctxt "error:account.payment.group:"
-msgid "No creditor identifier for party \"%s\"."
-msgstr "Se debe definir una identificación del creditor para el tercero \"%s\"."
-
-msgctxt "error:account.payment.group:"
 msgid "No valid mandate for payment \"%s\""
 msgstr "No se ha encontrado un mandato valido para el pago \"%s\""
 
@@ -17,10 +13,6 @@ msgid ""
 msgstr ""
 "No puedes eliminar el mandato \"%s\" porque no esta en estado borrador o "
 "cancelado. "
-
-msgctxt "error:party.party:"
-msgid "Invalid creditor identifier \"%s\" for party \"%s\"."
-msgstr "Identificador del creditor \"%s\" invalido para el tercero \"%s\"."
 
 msgctxt "field:account.payment,sepa_mandate:"
 msgid "Mandate"
@@ -119,7 +111,7 @@ msgid "SEPA Mandate"
 msgstr "Mandato SEPA"
 
 msgctxt "model:ir.action,name:act_mandate_form"
-msgid "Mandates"
+msgid "Mandats"
 msgstr "Mandatos"
 
 msgctxt "model:ir.action,name:act_mandate_form2"
@@ -218,10 +210,6 @@ msgstr "Solicitud"
 msgctxt "view:account.payment.sepa.mandate:"
 msgid "Validate"
 msgstr "Validar"
-
-msgctxt "view:party.party:"
-msgid "Calculate"
-msgstr "Calcular"
 
 msgctxt "view:party.party:"
 msgid "SEPA"

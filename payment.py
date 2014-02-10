@@ -340,6 +340,6 @@ class Mandate(Workflow, ModelSQL, ModelView):
     @classmethod
     def delete(cls, mandates):
         for mandate in mandates:
-            if mandate.state not in ('draft', 'cancel'):
+            if mandate.state not in ('draft', 'canceled'):
                 cls.raise_user_error('delete_draft_cancel', mandate.rec_name)
         super(Mandate, cls).delete(mandates)
