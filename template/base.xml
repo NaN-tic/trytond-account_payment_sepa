@@ -6,13 +6,13 @@ this repository contains the full copyright notices and license terms. -->
         <Nm>${party.name[:140]}</Nm>
         <py:with vars="address = party.address_get()">
             <PstlAdr py:if="address">
-                ${PostalAddress(party.address_get())}
+                ${PostalAddress(address)}
             </PstlAdr>
         </py:with>
         <Id py:if="party.sepa_creditor_identifier">
             <PrvtId>
                 <Othr>
-                    <Id>${party.sepa_creditor_identifier}</Id>
+                    <Id>${party.sepa_creditor_identifier_used}</Id>
                 </Othr>
             </PrvtId>
         </Id>

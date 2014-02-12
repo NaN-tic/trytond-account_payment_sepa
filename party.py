@@ -10,5 +10,11 @@ __all__ = ['Party']
 class Party:
     __name__ = 'party.party'
     sepa_creditor_identifier = fields.Char('SEPA Creditor Identifier', size=35)
+    sepa_creditor_identifier_used = fields.Function(fields.Char(
+            'SEPA Creditot Identifier Used'),
+        'get_sepa_creditor_identifier_used')
     sepa_mandates = fields.One2Many('account.payment.sepa.mandate', 'party',
         'SEPA Mandates')
+
+    def get_sepa_creditor_identifier_used(self, name):
+        return self.sepa_creditor_identifier

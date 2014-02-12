@@ -258,7 +258,7 @@ class Mandate(Workflow, ModelSQL, ModelView):
                     },
                 })
         cls._error_messages.update({
-                'delete_draft_cancel': ('You can not delete mandate "%s" '
+                'delete_draft_canceled': ('You can not delete mandate "%s" '
                     'because it is not in draft or canceled state.'),
                 })
 
@@ -341,5 +341,5 @@ class Mandate(Workflow, ModelSQL, ModelView):
     def delete(cls, mandates):
         for mandate in mandates:
             if mandate.state not in ('draft', 'canceled'):
-                cls.raise_user_error('delete_draft_cancel', mandate.rec_name)
+                cls.raise_user_error('delete_draft_canceled', mandate.rec_name)
         super(Mandate, cls).delete(mandates)
