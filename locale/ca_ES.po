@@ -18,6 +18,10 @@ msgctxt "field:account.payment,sepa_mandate:"
 msgid "Mandate"
 msgstr "Mandat"
 
+msgctxt "field:account.payment.group,sepa_file:"
+msgid "SEPA File"
+msgstr "Fitxer SEPA"
+
 msgctxt "field:account.payment.group,sepa_filename:"
 msgid "SEPA Filename"
 msgstr "Nom fitxer SEPA"

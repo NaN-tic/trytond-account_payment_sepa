@@ -88,6 +88,8 @@ class Group:
     sepa_message = fields.Text('SEPA Message', readonly=True, states={
             'invisible': ~Eval('sepa_message'),
             })
+    sepa_file = fields.Function(fields.Binary('SEPA File',
+            filename='sepa_filename'), 'get_sepa_file')
     sepa_filename = fields.Function(fields.Char('SEPA Filename'),
         'get_sepa_filename')
 
@@ -97,6 +99,9 @@ class Group:
         cls._error_messages.update({
                 'no_mandate': 'No valid mandate for payment "%s"',
                 })
+
+    def get_sepa_file(self, name):
+        return buffer(self.sepa_message.encode('utf-8'))
 
     def get_sepa_filename(self, name):
         return self.rec_name + '.xml'

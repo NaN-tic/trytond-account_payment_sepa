@@ -18,6 +18,10 @@ msgctxt "field:account.payment,sepa_mandate:"
 msgid "Mandate"
 msgstr "Mandato"
 
+msgctxt "field:account.payment.group,sepa_file:"
+msgid "SEPA File"
+msgstr "Fichero SEPA"
+
 msgctxt "field:account.payment.group,sepa_filename:"
 msgid "SEPA Filename"
 msgstr "Nombre fichero SEPA"

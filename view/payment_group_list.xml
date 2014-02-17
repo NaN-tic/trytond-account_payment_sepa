@@ -3,6 +3,7 @@
 this repository contains the full copyright notices and license terms. -->
 <data>
     <xpath expr="/tree/field[@name='kind']" position="after">
+        <field name="sepa_file"/>
         <field name="sepa_filename" tree_invisible="1"/>
     </xpath>
 </data>
