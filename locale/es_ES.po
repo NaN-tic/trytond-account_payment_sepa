@@ -6,6 +6,10 @@ msgctxt "error:account.payment.group:"
 msgid "No valid mandate for payment \"%s\""
 msgstr "No se ha encontrado un mandato valido para el pago \"%s\""
 
+msgctxt "error:account.payment.group:"
+msgid "WARNING!: Something is wrong in the SEPA file generation."
+msgstr "Se ha producido algún error en la generación del fichero SEPA."
+
 msgctxt "error:account.payment.sepa.mandate:"
 msgid ""
 "You can not delete mandate \"%s\" because it is not in draft or canceled "
@@ -123,6 +127,11 @@ msgid "Mandates"
 msgstr "Mandatos"
 
 msgctxt ""
+"model:ir.action.act_window.domain,name:act_move_line_form_domain_payable_mandate"
+msgid "Payable with Mandate"
+msgstr "A pagar con mandato"
+
+msgctxt ""
 "model:ir.action.act_window.domain,name:act_move_line_form_domain_receivable_mandate"
 msgid "Receivable with Mandate"
 msgstr "A cobrar con mandato"
@@ -132,8 +141,20 @@ msgid "Mandates"
 msgstr "Mandatos"
 
 msgctxt "selection:account.payment.journal,process_method:"
-msgid "SEPA"
-msgstr "SEPA"
+msgid "SEPA B2B Direct Debit"
+msgstr "SEPA B2B Direct Debit"
+
+msgctxt "selection:account.payment.journal,process_method:"
+msgid "SEPA Core Direct Debit"
+msgstr "SEPA Core Direct Debit"
+
+msgctxt "selection:account.payment.journal,process_method:"
+msgid "SEPA Credit Check"
+msgstr "SEPA Credit Check"
+
+msgctxt "selection:account.payment.journal,process_method:"
+msgid "SEPA Credit Transfer"
+msgstr "SEPA Credit Transfer"
 
 msgctxt "selection:account.payment.journal,sepa_payable_flavor:"
 msgid ""
