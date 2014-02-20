@@ -24,8 +24,10 @@ class Journal:
         'on_change_with_company_party')
     sepa_bank_account_number = fields.Many2One('bank.account.number',
         'SEPA Bank Account Number', states={
-            'required': Eval('process_method') == 'sepa',
-            'invisible': Eval('process_method') != 'sepa',
+            'required': Eval('process_method').in_(['sepa_core', 'sepa_b2b',
+                'sepa_trf', 'sepa_chk']),
+            'invisible': ~Eval('process_method').in_(['sepa_core', 'sepa_b2b',
+                'sepa_trf', 'sepa_chk']),
             },
         domain=[
             ('type', '=', 'iban'),
@@ -37,8 +39,8 @@ class Journal:
             ('pain.001.001.03', 'pain.001.001.03'),
             ('pain.001.001.05', 'pain.001.001.05'),
             ], 'SEPA Payable Flavor', states={
-            'required': Eval('process_method') == 'sepa',
-            'invisible': Eval('process_method') != 'sepa',
+            'required': Eval('process_method').in_(['sepa_trf', 'sepa_chk']),
+            'invisible': ~Eval('process_method').in_(['sepa_trf', 'sepa_chk'])
             },
         depends=['process_method'])
     sepa_receivable_flavor = fields.Selection([
@@ -46,15 +48,24 @@ class Journal:
             ('pain.008.001.02', 'pain.008.001.02'),
             ('pain.008.001.04', 'pain.008.001.04'),
             ], 'SEPA Receivable Flavor', states={
-            'required': Eval('process_method') == 'sepa',
-            'invisible': Eval('process_method') != 'sepa',
+            'required': Eval('process_method').in_(['sepa_core', 'sepa_b2b']),
+            'invisible': ~Eval('process_method').in_(['sepa_core', 'sepa_b2b'])
             },
         depends=['process_method'])
 
     @classmethod
     def __setup__(cls):
         super(Journal, cls).__setup__()
-        sepa_method = ('sepa', 'SEPA')
+        sepa_method = ('sepa_core', 'SEPA Core Direct Debit')
+        if sepa_method not in cls.process_method.selection:
+            cls.process_method.selection.append(sepa_method)
+        sepa_method = ('sepa_b2b', 'SEPA B2B Direct Debit')
+        if sepa_method not in cls.process_method.selection:
+            cls.process_method.selection.append(sepa_method)
+        sepa_method = ('sepa_trf', 'SEPA Credit Transfer')
+        if sepa_method not in cls.process_method.selection:
+            cls.process_method.selection.append(sepa_method)
+        sepa_method = ('sepa_chk', 'SEPA Credit Check')
         if sepa_method not in cls.process_method.selection:
             cls.process_method.selection.append(sepa_method)
 
@@ -69,6 +80,19 @@ class Journal:
     def on_change_with_company_party(self, name=None):
         if self.company:
             return self.company.party.id
+
+    @property
+    def sepa_method(self):
+        if self.process_method == "sepa_core":
+            return "CORE"
+        elif self.process_method == "sepa_b2b":
+            return "B2B"
+        elif self.process_method == "sepa_trf":
+            return "TRF"
+        elif self.process_method == "sepa_chk":
+            return "CHK"
+        else:
+            return ""
 
 
 def remove_comment(stream):
@@ -99,9 +123,16 @@ class Group:
         cls._error_messages.update({
                 'no_mandate': 'No valid mandate for payment "%s"',
                 })
+        cls._error_messages.update({
+                'no_sepa_file': ("WARNING!: Something is wrong in the SEPA "
+                    "file generation.")
+                })
 
     def get_sepa_file(self, name):
-        return buffer(self.sepa_message.encode('utf-8'))
+        if self.sepa_message:
+            return buffer(self.sepa_message.encode('utf-8'))
+        else:
+            self.raise_user_error('no_sepa_file')
 
     def get_sepa_filename(self, name):
         return self.rec_name + '.xml'
@@ -111,6 +142,18 @@ class Group:
             return loader.load('%s.xml' % self.journal.sepa_payable_flavor)
         elif self.kind == 'receivable':
             return loader.load('%s.xml' % self.journal.sepa_receivable_flavor)
+
+    def process_sepa_core(self):
+        self.process_sepa()
+
+    def process_sepa_b2b(self):
+        self.process_sepa()
+
+    def process_sepa_trf(self):
+        self.process_sepa()
+
+    def process_sepa_chk(self):
+        self.process_sepa()
 
     def process_sepa(self):
         pool = Pool()
@@ -163,10 +206,10 @@ class Payment:
 
     @property
     def sepa_end_to_end_id(self):
-        if self.description:
-            return self.description
-        elif self.line and self.line.origin:
+        if self.line and self.line.origin:
             return self.line.origin.rec_name
+        elif self.description:
+            return self.description
         else:
             return str(self.id)
 

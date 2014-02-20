@@ -50,7 +50,7 @@ this repository contains the full copyright notices and license terms. -->
                     <!-- Prtry -->
                 </SvcLvl>
                 <LclInstrm>
-                    <Cd>CORE</Cd>
+                    <Cd>${group.journal.sepa_method}</Cd>
                     <!-- Prtry -->
                 </LclInstrm>
                 <SeqTp>${payment.sepa_mandate.sequence_type}</SeqTp>

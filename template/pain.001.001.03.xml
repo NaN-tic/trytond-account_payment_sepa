@@ -38,7 +38,7 @@ this repository contains the full copyright notices and license terms. -->
         </GrpHdr>
         <PmtInf py:for="payment in group.payments">
             <PmtInfId>${str(payment.id)[:35]}</PmtInfId>
-            <PmtMtd>TRF</PmtMtd>
+            <PmtMtd>${group.journal.sepa_method}</PmtMtd>
             <BtchBookg>false</BtchBookg>
             <NbOfTxs>1</NbOfTxs>
             <CtrlSum>${payment.amount}</CtrlSum>
