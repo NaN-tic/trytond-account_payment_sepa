@@ -3,7 +3,6 @@
 this repository contains the full copyright notices and license terms. -->
 <tryton>
     <data>
-
         <record model="ir.action.act_window.domain"
             id="act_move_line_form_domain_receivable_mandate">
             <field name="name">Receivable with Mandate</field>
@@ -12,5 +11,12 @@ this repository contains the full copyright notices and license terms. -->
             <field name="act_window" ref="account_payment.act_move_line_form"/>
         </record>
 
+        <record model="ir.action.act_window.domain"
+            id="act_move_line_form_domain_payable_mandate">
+            <field name="name">Payable with Mandate</field>
+            <field name="sequence" eval="15"/>
+            <field name="domain">['AND', ['OR', ('credit', '&gt;', 0), ('debit', '&lt;', 0)], ('party.sepa_mandates', '!=', None)]</field>
+            <field name="act_window" ref="account_payment.act_move_line_form"/>
+        </record>
     </data>
 </tryton>
