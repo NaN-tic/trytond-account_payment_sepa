@@ -114,6 +114,8 @@ class Group:
             })
     sepa_file = fields.Function(fields.Binary('SEPA File',
             filename='sepa_filename'), 'get_sepa_file')
+            'invisible': ~Eval('sepa_file'),
+            }), 'get_sepa_file')
     sepa_filename = fields.Function(fields.Char('SEPA Filename'),
         'get_sepa_filename')
 
@@ -123,16 +125,12 @@ class Group:
         cls._error_messages.update({
                 'no_mandate': 'No valid mandate for payment "%s"',
                 })
-        cls._error_messages.update({
-                'no_sepa_file': ("WARNING!: Something is wrong in the SEPA "
-                    "file generation.")
-                })
 
     def get_sepa_file(self, name):
         if self.sepa_message:
             return buffer(self.sepa_message.encode('utf-8'))
         else:
-            self.raise_user_error('no_sepa_file')
+            return ""
 
     def get_sepa_filename(self, name):
         return self.rec_name + '.xml'
@@ -207,9 +205,9 @@ class Payment:
     @property
     def sepa_end_to_end_id(self):
         if self.line and self.line.origin:
-            return self.line.origin.rec_name
+            return self.line.origin.rec_name[:35]
         elif self.description:
-            return self.description
+            return self.description[:35]
         else:
             return str(self.id)
 
