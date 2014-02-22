@@ -113,7 +113,7 @@ class Group:
             'invisible': ~Eval('sepa_message'),
             })
     sepa_file = fields.Function(fields.Binary('SEPA File',
-            filename='sepa_filename'), 'get_sepa_file')
+            filename='sepa_filename', states={
             'invisible': ~Eval('sepa_file'),
             }), 'get_sepa_file')
     sepa_filename = fields.Function(fields.Char('SEPA Filename'),
