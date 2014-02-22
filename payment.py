@@ -320,6 +320,9 @@ class Mandate(Workflow, ModelSQL, ModelView):
     def default_state():
         return 'draft'
 
+    def get_rec_name(self, name):
+        return self.identification or unicode(self.id)
+
     @property
     def is_valid(self):
         if self.state == 'validated':
