@@ -45,7 +45,7 @@ class AccountPaymentSepaTestCase(unittest.TestCase):
         'Test depends'
         test_depends()
 
-    def validate_file(self, flavor, kind):
+    def validate_file(self, flavor, kind, process_method):
         'Test generated files are valid'
         with Transaction().start(DB_NAME, USER, context=CONTEXT):
             company, = self.company.search([
@@ -95,10 +95,8 @@ class AccountPaymentSepaTestCase(unittest.TestCase):
             journal.name = flavor
             journal.company = company
             journal.currency = company.currency
-            journal.process_method = 'sepa'
+            journal.process_method = process_method
             journal.sepa_bank_account_number = company_bank_number
-            journal.sepa_payable_flavor = 'pain.001.001.03'
-            journal.sepa_receivable_flavor = 'pain.008.001.02'
             setattr(journal, 'sepa_%s_flavor' % kind, flavor)
             journal.save()
 
@@ -127,19 +125,19 @@ class AccountPaymentSepaTestCase(unittest.TestCase):
 
     def test_pain001_001_03(self):
         'Test pain001.001.03 xsd validation'
-        self.validate_file('pain.001.001.03', 'payable')
+        self.validate_file('pain.001.001.03', 'payable', 'sepa_trf')
 
     def test_pain001_001_05(self):
         'Test pain001.001.05 xsd validation'
-        self.validate_file('pain.001.001.05', 'payable')
+        self.validate_file('pain.001.001.05', 'payable', 'sepa_trf')
 
     def test_pain008_001_02(self):
         'Test pain008.001.02 xsd validation'
-        self.validate_file('pain.008.001.02', 'receivable')
+        self.validate_file('pain.008.001.02', 'receivable', 'sepa_core')
 
     def test_pain008_001_04(self):
         'Test pain008.001.04 xsd validation'
-        self.validate_file('pain.008.001.04', 'receivable')
+        self.validate_file('pain.008.001.04', 'receivable', 'sepa_core')
 
 
 def suite():
