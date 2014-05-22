@@ -49,7 +49,7 @@ class AccountPaymentSepaTestCase(unittest.TestCase):
         'Test generated files are valid'
         with Transaction().start(DB_NAME, USER, context=CONTEXT):
             company, = self.company.search([
-                    ('rec_name', '=', 'B2CK'),
+                    ('rec_name', '=', 'Dunder Mifflin'),
                     ])
             euro, = self.currency.create([{
                         'name': 'Euro',
