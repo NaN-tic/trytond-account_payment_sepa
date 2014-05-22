@@ -213,6 +213,8 @@ class Payment:
 
     @property
     def sepa_bank_account_number(self):
+        if self.sepa_mandate and self.sepa_mandate.account_number:
+            return self.sepa_mandate.account_number
         for account in self.party.bank_accounts:
             for number in account.numbers:
                 if number.type == 'iban':
