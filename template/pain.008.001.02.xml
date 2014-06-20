@@ -8,18 +8,21 @@ this repository contains the full copyright notices and license terms. -->
     xmlns:py="http://genshi.edgewall.org/">
     <xi:include href="base.xml"/>
     <!-- version 2 uses BIC instead of BICFI -->
-    <py:def function="FinancialInstitution(bank)">
+    <py:def function="FinancialInstitution(bank, only_bic=False)">
         <FinInstnId>
-            <!-- EPC limits to only BIC -->
-            <BIC>${bank.bic}</BIC>
-            <!-- ClrSysMmbId -->
-            <!--Nm>${bank.party.name[:140]}</Nm-->
-            <!--py:with vars="address = bank.party.address_get()">
-                <PstlAdr py:if="address">
-                    ${PostalAddress(address)}
-                </PstlAdr>
-            </py:with-->
-            <!-- Othr -->
+            <BIC py:if="bank.bic">${bank.bic}</BIC>
+            <py:if test="not only_bic">
+                <!-- ClrSysMmbId -->
+                <Nm>${bank.party.name[:140]}</Nm>
+                <py:with vars="address = bank.party.address_get()">
+                    <PstlAdr py:if="address">
+                        ${PostalAddress(address)}
+                    </PstlAdr>
+                </py:with>
+            </py:if>
+            <Othr py:if="not bank.bic">
+                <Id>NOTPROVIDED</Id>
+            </Othr>
         </FinInstnId>
         <!-- BrnchId -->
     </py:def>
@@ -37,12 +40,12 @@ this repository contains the full copyright notices and license terms. -->
             </InitgPty>
             <!-- FwdgAgt -->
         </GrpHdr>
-        <PmtInf py:for="payment in group.payments">
-            <PmtInfId>${str(payment.id)[:35]}</PmtInfId>
+        <PmtInf py:for="key, payments in group.sepa_payments">
+            <PmtInfId>${group.sepa_group_payment_id(key)[:35]}</PmtInfId>
             <PmtMtd>DD</PmtMtd>
-            <BtchBookg>true</BtchBookg>
-            <NbOfTxs>1</NbOfTxs>
-            <CtrlSum>${payment.amount}</CtrlSum>
+            <BtchBookg>${'true' if group.journal.sepa_batch_booking else 'false'}</BtchBookg>
+            <NbOfTxs>${len(payments)}</NbOfTxs>
+            <CtrlSum>${sum(p.amount for p in payments)}</CtrlSum>
             <PmtTpInf>
                 <!-- InstrPrty -->
                 <SvcLvl>
@@ -50,13 +53,13 @@ this repository contains the full copyright notices and license terms. -->
                     <!-- Prtry -->
                 </SvcLvl>
                 <LclInstrm>
-                    <Cd>${group.journal.sepa_method}</Cd>
+                    <Cd>CORE</Cd>
                     <!-- Prtry -->
                 </LclInstrm>
-                <SeqTp>${payment.sepa_mandate.sequence_type}</SeqTp>
+                <SeqTp>${key['sequence_type']}</SeqTp>
                 <!-- CtgyPurp -->
             </PmtTpInf>
-            <ReqdColltnDt>${payment.date.isoformat()}</ReqdColltnDt>
+            <ReqdColltnDt>${key['date'].isoformat()}</ReqdColltnDt>
             <Cdtr>
                 ${PartyIdentification(group.company.party)}
             </Cdtr>
@@ -64,24 +67,24 @@ this repository contains the full copyright notices and license terms. -->
                 ${Account(group.journal.sepa_bank_account_number)}
             </CdtrAcct>
             <CdtrAgt>
-                ${FinancialInstitution(group.journal.sepa_bank_account_number.account.bank)}
+                ${FinancialInstitution(group.journal.sepa_bank_account_number.account.bank, only_bic=True)}
             </CdtrAgt>
             <!-- CdtrAgtAcct -->
             <!-- UltmtCdtr -->
-            <!-- ChrgBr -->
+            <ChrgBr>${group.journal.sepa_charge_bearer}</ChrgBr>
             <!-- ChrgsAcct -->
             <!-- ChrgsAcctAgt -->
             <CdtrSchmeId>
                 ${PartyIdentification(group.company.party)}
             </CdtrSchmeId>
-            <DrctDbtTxInf> <!-- Only one per payment -->
+            <DrctDbtTxInf py:for="payment in payments">
                 <PmtId>
-                    <!-- InstrId -->
+                    <InstrId>${payment.sepa_instruction_id}</InstrId>
                     <EndToEndId>${payment.sepa_end_to_end_id}</EndToEndId>
                 </PmtId>
-                <!-- TODO PmtTpInf -->
+                <!-- PmtTpInf -->
                 <InstdAmt py:attrs="{'Ccy': payment.currency.code}">${payment.amount}</InstdAmt>
-                <ChrgBr>${payment.sepa_charge_bearer}</ChrgBr>
+                <!-- ChrgBr --> <!-- EPC only at payment information level -->
                 <DrctDbtTx>
                     <MndtRltdInf py:with="mandate = payment.sepa_mandate">
                         <MndtId>${mandate.identification}</MndtId>
@@ -99,7 +102,7 @@ this repository contains the full copyright notices and license terms. -->
                 </DrctDbtTx>
                 <!-- UltmtCdtr -->
                 <DbtrAgt>
-                    ${FinancialInstitution(payment.sepa_bank_account_number.account.bank)}
+                    ${FinancialInstitution(payment.sepa_bank_account_number.account.bank, only_bic=True)}
                 </DbtrAgt>
                 <!-- DbtrAgtAcct -->
                 <Dbtr>
@@ -108,17 +111,15 @@ this repository contains the full copyright notices and license terms. -->
                 <DbtrAcct>
                     ${Account(payment.sepa_bank_account_number)}
                 </DbtrAcct>
-                <RmtInf>
-                    <Ustrd>
-                        ${payment.description}
-                    </Ustrd>
-                </RmtInf>
                 <!-- UltmtDbtr -->
                 <!-- InstrForCdtrAgt -->
                 <!-- Purp -->
                 <!-- RgltryRptg -->
                 <!-- Tax -->
                 <!-- RltdRmtInf -->
+                <RmtInf py:if="payment.sepa_remittance_information">
+                    <Ustrd>${payment.sepa_remittance_information[:140]}</Ustrd>
+                </RmtInf>
             </DrctDbtTxInf>
         </PmtInf>
     </CstmrDrctDbtInitn>

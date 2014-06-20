@@ -3,16 +3,21 @@
 this repository contains the full copyright notices and license terms. -->
 <py:strip xmlns:py="http://genshi.edgewall.org/">
     <py:def function="PartyIdentification(party)">
-        <Nm>${party.name[:140]}</Nm>
+        <!-- EPC limits to 70 instead of 140 -->
+        <Nm>${party.name[:70]}</Nm>
         <py:with vars="address = party.address_get()">
             <PstlAdr py:if="address">
                 ${PostalAddress(address)}
             </PstlAdr>
         </py:with>
-        <Id py:if="party.sepa_creditor_identifier">
+        <Id py:if="party.sepa_creditor_identifier_used">
             <PrvtId>
                 <Othr>
                     <Id>${party.sepa_creditor_identifier_used}</Id>
+                    <SchmeNm>
+                        <Prtry>SEPA</Prtry>
+                    </SchmeNm>
+                    <!-- Issr -->
                 </Othr>
             </PrvtId>
         </Id>
@@ -33,25 +38,28 @@ this repository contains the full copyright notices and license terms. -->
     </py:def>
     <py:def function="Account(account_number)">
         <Id>
-            <!-- Usage rule: only IBAN is allowed -->
+            <!-- EPC only IBAN is allowed -->
             <IBAN>${account_number.compact_iban}</IBAN>
         </Id>
         <!-- Tp -->
         <Ccy py:if="account_number.account.currency">${account_number.account.currency.code}</Ccy>
         <!-- Nm -->
     </py:def>
-    <py:def function="FinancialInstitution(bank)">
+    <py:def function="FinancialInstitution(bank, only_bic=False)">
         <FinInstnId>
-            <!-- EPC limits to only BICFI -->
-            <BICFI>${bank.bic}</BICFI>
-            <!-- ClrSysMmbId -->
-            <!--Nm>${bank.party.name[:140]}</Nm-->
-            <!--py:with vars="address = bank.party.address_get()">
-                <PstlAdr py:if="address">
-                    ${PostalAddress(address)}
-                </PstlAdr>
-            </py:with-->
-            <!-- Othr -->
+            <BICFI py:if="bank.bic">${bank.bic}</BICFI>
+            <py:if test="not only_bic">
+                <!-- ClrSysMmbId -->
+                <Nm>${bank.party.name[:140]}</Nm>
+                <py:with vars="address = bank.party.address_get()">
+                    <PstlAdr py:if="address">
+                        ${PostalAddress(address)}
+                    </PstlAdr>
+                </py:with>
+            </py:if>
+            <Othr py:if="not bank.bic">
+                <Id>NOTPROVIDED</Id>
+            </Othr>
         </FinInstnId>
         <!-- BrnchId -->
     </py:def>

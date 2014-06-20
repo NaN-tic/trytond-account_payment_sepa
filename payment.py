@@ -2,6 +2,7 @@
 #this repository contains the full copyright notices and license terms.
 import datetime
 import os
+from itertools import groupby
 
 import genshi
 import genshi.template
@@ -94,6 +95,14 @@ class Journal:
         else:
             return ""
 
+    @property
+    def sepa_charge_bearer(self):
+        return 'SLEV'
+
+    @property
+    def sepa_batch_booking(self):
+        return False
+
 
 def remove_comment(stream):
     for kind, data, pos in stream:
@@ -175,6 +184,25 @@ class Group:
     def sepa_initiating_party(self):
         return self.company.party
 
+    def sepa_group_payment_key(self, payment):
+        key = (('date', payment.date),)
+        if self.kind == 'receivable':
+            key += (('sequence_type', payment.sepa_mandate.sequence_type),)
+        return key
+
+    def sepa_group_payment_id(self, key):
+        payment_id = str(key['date'].toordinal())
+        if self.kind == 'receivable':
+            payment_id += '-' + key['sequence_type']
+        return payment_id
+
+    @property
+    def sepa_payments(self):
+        keyfunc = self.sepa_group_payment_key
+        payments = sorted(self.payments, key=keyfunc)
+        for key, grouped_payments in groupby(payments, key=keyfunc):
+            yield dict(key), list(grouped_payments)
+
 
 class Payment:
     __name__ = 'account.payment'
@@ -199,8 +227,10 @@ class Payment:
         return mandates
 
     @property
-    def sepa_charge_bearer(self):
-        return 'SLEV'
+    def sepa_end_to_end_id(self):
+        return str(self.id)
+
+    sepa_instruction_id = sepa_end_to_end_id
 
     @property
     def sepa_end_to_end_id(self):
@@ -210,6 +240,13 @@ class Payment:
             return self.description[:35]
         else:
             return str(self.id)
+
+    @property
+    def sepa_remittance_information(self):
+        if self.description:
+            return self.description
+        elif self.line and self.line.origin:
+            return self.line.origin.rec_name
 
     @property
     def sepa_bank_account_number(self):
